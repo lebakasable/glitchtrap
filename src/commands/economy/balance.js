@@ -2,7 +2,7 @@ const { Client, Interaction, ApplicationCommandOptionType } = require('discord.j
 const User = require('../../models/User');
 
 module.exports = {
-  callback: async (client, interaction) => {
+  callback: async (_client, interaction) => {
     if (!interaction.inGuild()) return;
 
     const targetUserId = interaction.options.get('user')?.value || interaction.member.id;

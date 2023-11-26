@@ -1,8 +1,8 @@
-const { ApplicationCommandOptionType, Client, Interaction, PermissionFlagsBits } = require('discord.js');
+const { ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
 const AutoRole = require('../../models/AutoRole');
 
 module.exports = {
-  callback: async (client, interaction) => {
+  callback: async (_client, interaction) => {
     if (!interaction.inGuild()) return;
 
     const targetRoleId = interaction.options.get('role').value;

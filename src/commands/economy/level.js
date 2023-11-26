@@ -1,15 +1,13 @@
 const {
-  Client,
-  Interaction,
   ApplicationCommandOptionType,
   AttachmentBuilder,
 } = require('discord.js');
-const canvacord = require('canvacord');
 const calculateLevelXp = require('../../utils/calculateLevelXp');
 const Level = require('../../models/Level');
+const canvacord = require('canvacord');
 
 module.exports = {
-  callback: async (client, interaction) => {
+  callback: async (_client, interaction) => {
     if (!interaction.inGuild()) return;
 
     await interaction.deferReply();
@@ -53,9 +51,8 @@ module.exports = {
       .setCurrentXP(fetchedLevel.xp)
       .setRequiredXP(calculateLevelXp(fetchedLevel.level))
       .setStatus(targetUserObj.presence.status)
-      .setProgressBar('#FFC300', 'COLOR')
-      .setUsername(targetUserObj.user.username)
-      .setDiscriminator(targetUserObj.user.discriminator);
+      .setProgressBar('#FFFFFF', 'COLOR')
+      .setUsername(targetUserObj.user.username);
 
     const data = await rank.build();
     const attachment = new AttachmentBuilder(data);

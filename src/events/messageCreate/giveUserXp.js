@@ -1,9 +1,8 @@
-const { Client, Message } = require('discord.js');
 const calculateLevelXp = require('../../utils/calculateLevelXp');
 const Level = require('../../models/Level');
 const cooldowns = new Set();
 
-function getRandomXp(min, max) {
+const getRandomXp = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -29,7 +28,35 @@ module.exports = async (client, message) => {
         level.xp = 0;
         level.level += 1;
 
-        message.channel.send(`${message.member}, vous êtes maintenant **niveau ${level.level}** !`);
+        let allLevels = await Level.find({ guildId: query.guildId }).select(
+          '-_id userId level xp'
+        );
+
+        allLevels.sort((a, b) => {
+          if (a.level === b.level) {
+            return b.xp - a.xp;
+          } else {
+            return b.level - a.level;
+          }
+        });
+
+
+        const userObj = await message.guild.members.fetch(message.author.id);
+        const rank = new canvacord.Rank()
+          .setAvatar(userObj.user.displayAvatarURL({ size: 256 }))
+          .setRank(currentRank)
+          .setLevel(level.level)
+          .setCurrentXP(level.xp)
+          .setRequiredXP(calculateLevelXp(level.level))
+          .setStatus(userObj.presence.status)
+          .setProgressBar('#FFFFFF', 'COLOR')
+          .setUsername(userObj.user.username);
+
+        const data = await rank.build();
+        const attachment = new AttachmentBuilder(data);
+
+        const channel = await client.channels.fetch('1178096796283711498');
+        channel.send({ files: [attachment] });
       }
 
       await level.save().catch((e) => {

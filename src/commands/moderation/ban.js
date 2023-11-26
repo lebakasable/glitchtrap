@@ -1,12 +1,10 @@
 const {
-  Client,
-  Interaction,
   ApplicationCommandOptionType,
   PermissionFlagsBits,
 } = require('discord.js');
 
 module.exports = {
-  callback: async (client, interaction) => {
+  callback: async (_client, interaction) => {
     const targetUserId = interaction.options.get('target-user').value;
     const reason =
       interaction.options.get('reason')?.value || 'Aucune raison donnée';

@@ -1,8 +1,8 @@
-const { Client, Interaction, PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits } = require('discord.js');
 const AutoRole = require('../../models/AutoRole');
 
 module.exports = {
-  callback: async (client, interaction) => {
+  callback: async (_client, interaction) => {
     try {
       await interaction.deferReply();
 

@@ -6,7 +6,7 @@ const dailyAmount = 1000;
 module.exports = {
   name: 'daily',
   description: 'Collecte ta récompense journalière',
-  callback: async (client, interaction) => {
+  callback: async (_client, interaction) => {
     if (!interaction.inGuild()) return;
 
     try {
@@ -29,7 +29,7 @@ module.exports = {
           );
           return;
         }
-        
+
         user.lastDaily = new Date();
       } else {
         user = new User({
