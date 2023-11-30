@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "fc-list && node src/index.js"
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.44",
