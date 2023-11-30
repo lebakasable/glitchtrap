@@ -18,8 +18,8 @@ module.exports = {
 
     interaction.editReply(
       targetUserId === interaction.member.id
-        ? `Votre solde est **${user.balance}** fazcoins.`
-        : `Le solde de <@${targetUserId}> est de **${user.balance}** fazcoins.`
+        ? `Votre solde est de **${user.balance} fazcoins**.`
+        : `Le solde de <@${targetUserId}> est de **${user.balance} fazcoins**.`
     );
   },
 

@@ -42,7 +42,7 @@ module.exports = {
       await user.save();
 
       interaction.editReply(
-        `${dailyAmount} fazcoins ont été ajouté a votre solde. Votre nouveau solde est de ${user.balance} fazcoins.`
+        `**${dailyAmount} fazcoins** ont été ajouté a votre solde. Votre nouveau solde est de **${user.balance} fazcoins**.`
       );
     } catch (error) {
       console.error(`Error with /daily: ${error}`);

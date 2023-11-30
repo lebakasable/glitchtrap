@@ -1,15 +1,23 @@
-const calculateLevelXp = require('../../utils/calculateLevelXp');
-const Level = require('../../models/Level');
+const calculateLevelXp = require("../../utils/calculateLevelXp");
+const Level = require("../../models/Level");
 const cooldowns = new Set();
+const Canvas = require("@napi-rs/canvas");
+const path = require("path");
+const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 
 const getRandomXp = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
 module.exports = async (client, message) => {
-  if (!message.inGuild() || message.author.bot || cooldowns.has(message.author.id)) return;
+  if (
+    !message.inGuild() ||
+    message.author.bot ||
+    cooldowns.has(message.author.id)
+  )
+    return;
 
   const xpToGive = getRandomXp(5, 15);
 
@@ -28,35 +36,49 @@ module.exports = async (client, message) => {
         level.xp = 0;
         level.level += 1;
 
-        let allLevels = await Level.find({ guildId: query.guildId }).select(
-          '-_id userId level xp'
+        const canvas = Canvas.createCanvas(700, 200);
+        const ctx = canvas.getContext("2d");
+
+        const background = await Canvas.loadImage(
+          path.join(__dirname, "..", "..", "..", "assets", "levelup.jpeg"),
         );
 
-        allLevels.sort((a, b) => {
-          if (a.level === b.level) {
-            return b.xp - a.xp;
-          } else {
-            return b.level - a.level;
-          }
+        ctx.drawImage(background, 0, -200);
+
+        const pfp = await Canvas.loadImage(
+          message.author.displayAvatarURL({
+            format: "jpeg",
+          }),
+        );
+
+        let x = 25;
+        let y = canvas.height / 2 - pfp.height / 2;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x * 3.55, y * 2.8, pfp.width / 2, 0, Math.PI * 2, false);
+        ctx.clip();
+        ctx.drawImage(pfp, x, y);
+        ctx.restore();
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "bold 35px Montserrat";
+
+        let text = `Vous êtes passé niveau ${level.level} !`;
+        x = 50 + pfp.width;
+        y = canvas.height - pfp.height / 2 - 25;
+        ctx.fillText(text, x, y + 5);
+
+        const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), {
+          name: "levelup.png",
         });
 
+        const embed = new EmbedBuilder()
+          .setColor(0xb8a7ea)
+          .setDescription(`Félicitations ${message.author} !`)
+          .setImage("attachment://levelup.png");
 
-        const userObj = await message.guild.members.fetch(message.author.id);
-        const rank = new canvacord.Rank()
-          .setAvatar(userObj.user.displayAvatarURL({ size: 256 }))
-          .setRank(currentRank)
-          .setLevel(level.level)
-          .setCurrentXP(level.xp)
-          .setRequiredXP(calculateLevelXp(level.level))
-          .setStatus(userObj.presence.status)
-          .setProgressBar('#FFFFFF', 'COLOR')
-          .setUsername(userObj.user.username);
-
-        const data = await rank.build();
-        const attachment = new AttachmentBuilder(data);
-
-        const channel = await client.channels.fetch('1178096796283711498');
-        channel.send({ files: [attachment] });
+        const channel = await client.channels.fetch("1178096796283711498");
+        channel.send({ embeds: [embed], files: [attachment] });
       }
 
       await level.save().catch((e) => {

@@ -5,7 +5,7 @@ module.exports = {
   callback: async (_client, interaction) => {
     const mentionable = interaction.options.get('target-user').value;
     const duration = interaction.options.get('duration').value;
-    const reason = interaction.options.get('reason')?.value || 'Aucune raison donnée';
+    const reason = interaction.options.get('reason')?.value || 'Aucune';
 
     await interaction.deferReply();
 

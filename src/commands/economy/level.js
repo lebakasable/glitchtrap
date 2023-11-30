@@ -4,7 +4,8 @@ const {
 } = require('discord.js');
 const calculateLevelXp = require('../../utils/calculateLevelXp');
 const Level = require('../../models/Level');
-const canvacord = require('canvacord');
+const Canvas = require('@napi-rs/canvas');
+const path = require('path');
 
 module.exports = {
   callback: async (_client, interaction) => {
@@ -44,18 +45,49 @@ module.exports = {
 
     let currentRank = allLevels.findIndex((lvl) => lvl.userId === targetUserId) + 1;
 
-    const rank = new canvacord.Rank()
-      .setAvatar(targetUserObj.user.displayAvatarURL({ size: 256 }))
-      .setRank(currentRank)
-      .setLevel(fetchedLevel.level)
-      .setCurrentXP(fetchedLevel.xp)
-      .setRequiredXP(calculateLevelXp(fetchedLevel.level))
-      .setStatus(targetUserObj.presence.status)
-      .setProgressBar('#FFFFFF', 'COLOR')
-      .setUsername(targetUserObj.user.username);
+    const canvas = Canvas.createCanvas(700, 200);
+    const ctx = canvas.getContext('2d');
 
-    const data = await rank.build();
-    const attachment = new AttachmentBuilder(data);
+    const background = await Canvas.loadImage(
+      path.join(__dirname, '..', '..', '..', 'assets', 'showlevel.jpeg')
+    );
+
+    ctx.drawImage(background, 0, -550);
+
+    const pfp = await Canvas.loadImage(
+      targetUserObj.user.displayAvatarURL({
+        format: 'jpeg',
+      })
+    );
+
+    let x = 25;
+    let y = canvas.height / 2 - pfp.height / 2;
+    ctx.save()
+    ctx.beginPath()
+    ctx.arc(x * 3.55, y * 2.8, pfp.width / 2, 0, Math.PI * 2, false)
+    ctx.clip()
+    ctx.drawImage(pfp, x, y);
+    ctx.restore();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 42px Montserrat';
+
+    let text = `Niveau ${fetchedLevel.level} (#${currentRank})`;
+    x = 50 + pfp.width;
+    y = canvas.height - pfp.height;
+    ctx.fillText(text, x, y + 10);
+
+    const xpNeeded = calculateLevelXp(fetchedLevel.level);
+
+    ctx.font = 'bold 38px Montserrat';
+    text = `${fetchedLevel.xp}/${xpNeeded}`;
+    x = 50 + pfp.width;
+    y = canvas.height - pfp.height / 2;
+    ctx.fillText(text, x, y);
+
+    ctx.fillRect(0, canvas.height - 10, canvas.width * (fetchedLevel.xp / xpNeeded), 10);
+
+    const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'));
     interaction.editReply({ files: [attachment] });
   },
 
