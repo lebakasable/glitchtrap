@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "fc-list && node src/index.js"
+    "start": "node src/index.js"
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.44",
@@ -13,6 +13,7 @@
     "dotenv": "^16.3.1",
     "mongoose": "^6.12.3",
     "ms": "^2.1.3",
-    "pretty-ms": "^8.0.0"
+    "pretty-ms": "^8.0.0",
+    "translate": "^2.0.2"
   }
 }

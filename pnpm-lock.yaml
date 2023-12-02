@@ -23,6 +23,9 @@ dependencies:
   pretty-ms:
     specifier: ^8.0.0
     version: 8.0.0
+  translate:
+    specifier: ^2.0.2
+    version: 2.0.2
 
 packages:
 
@@ -1476,6 +1479,10 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       punycode: 2.3.1
+    dev: false
+
+  /translate@2.0.2:
+    resolution: {integrity: sha512-K07zjM146c2RYbdlG0xCNGkE6WPdcWjdWX55SOpHzgIq9Elj+LvvXDAfbeQ8gSfkrluaGahnNv2pYfq82UiBDQ==}
     dev: false
 
   /ts-mixer@6.0.3:
